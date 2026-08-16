@@ -1,0 +1,28 @@
+name: Deploy to IIS
+
+on:
+  push:
+    branches:
+      - dev-server-1
+
+jobs:
+  deploy:
+    name: Deploy to IIS
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy HTML file to IIS
+        shell: powershell
+        run: |
+          $source = "${{ github.workspace }}\ui-test-bench.html"
+          $destination = "C:\inetpub\wwwroot\Celeriq-UI\ui-test-bench.html"
+
+          Write-Host "Source: $source"
+          Write-Host "Destination: $destination"
+
+          Copy-Item $source $destination -Force
+
+          Write-Host "Deployment completed successfully."
