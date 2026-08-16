@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Test Bench — Specimen Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EEEDE3;
+    --paper-raised:#F7F6EF;
+    --ink:#1B1F23;
+    --ink-soft:#5B6167;
+    --line:#C9CCBC;
+    --line-strong:#9CA08D;
+    --blue:#2F5D8A;
+    --blue-soft:#DCE6EE;
+    --green:#3F8F5F;
+    --green-soft:#DEEBE2;
+    --red:#C0392B;
+    --red-soft:#F4DEDB;
+    --amber:#B8842B;
+    --amber-soft:#F1E4CB;
+    --radius:3px;
+    --font-display:'Space Grotesk',sans-serif;
+    --font-body:'IBM Plex Sans',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  html.dark{
+    --paper:#14171A;
+    --paper-raised:#1C2024;
+    --ink:#EDEDE6;
+    --ink-soft:#9AA0A6;
+    --line:#33383D;
+    --line-strong:#4A5057;
+    --blue-soft:#1E2E3B;
+    --green-soft:#1B2E23;
+    --red-soft:#3A2220;
+    --amber-soft:#332918;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0/40px 40px,
+      var(--paper);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:var(--font-body);
+    transition:background-color .25s ease, color .25s ease;
+    -webkit-font-smoothing:antialiased;
+  }
+  html.dark body{ opacity:.97; }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:0 24px 120px; }
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:blur(6px);
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    border-bottom:1px solid var(--line-strong);
+    padding:18px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    max-width:920px; margin:0 auto;
+  }
+  .brand{ display:flex; align-items:baseline; gap:10px; }
+  .brand-mark{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.14em;
+    color:var(--blue); border:1px solid var(--blue); padding:2px 6px; border-radius:2px;
+  }
+  .brand h1{ font-family:var(--font-display); font-size:19px; font-weight:600; margin:0; letter-spacing:-.01em; }
+  .header-controls{ display:flex; align-items:center; gap:14px; }
+  .readout{
+    font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);
+    display:flex; gap:10px; align-items:center;
+  }
+  .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px var(--green-soft); }
+
+  /* theme toggle switch */
+  .switch{
+    --w:44px; --h:22px;
+    width:var(--w); height:var(--h);
+    background:var(--paper-raised); border:1px solid var(--line-strong);
+    border-radius:999px; position:relative; cursor:pointer;
+    transition:background .2s ease;
+  }
+  .switch::after{
+    content:''; position:absolute; top:2px; left:2px;
+    width:calc(var(--h) - 6px); height:calc(var(--h) - 6px);
+    background:var(--ink); border-radius:50%;
+    transition:transform .2s ease;
+  }
+  html.dark .switch::after{ transform:translateX(22px); background:var(--blue); }
+
+  /* ---------- intro ---------- */
+  .intro{ padding:56px 0 40px; }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-soft); margin:0 0 10px;
+  }
+  .intro h2{
+    font-family:var(--font-display); font-size:clamp(28px,5vw,42px); line-height:1.05;
+    margin:0 0 14px; max-width:16ch; font-weight:700; letter-spacing:-.02em;
+  }
+  .intro p{ max-width:56ch; color:var(--ink-soft); line-height:1.6; margin:0; font-size:15px; }
+
+  /* ---------- specimen frame ---------- */
+  .specimen{
+    position:relative;
+    background:var(--paper-raised);
+    border:1px solid var(--line-strong);
+    margin:0 0 40px;
+    padding:0;
+  }
+  .specimen::before, .specimen::after,
+  .specimen .cross-br, .specimen .cross-tr{
+    content:''; position:absolute; width:11px; height:11px; pointer-events:none;
+  }
+  .specimen::before{ top:-1px; left:-1px; border-top:2px solid var(--ink); border-left:2px solid var(--ink); }
+  .specimen::after{ bottom:-1px; left:-1px; border-bottom:2px solid var(--ink); border-left:2px solid var(--ink); }
+  .specimen .cross-tr{ top:-1px; right:-1px; border-top:2px solid var(--ink); border-right:2px solid var(--ink); }
+  .specimen .cross-br{ bottom:-1px; right:-1px; border-bottom:2px solid var(--ink); border-right:2px solid var(--ink); }
+
+  .specimen-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 20px; border-bottom:1px solid var(--line);
+    font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);
+    letter-spacing:.04em;
+  }
+  .specimen-head .id{ color:var(--ink); font-weight:600; }
+  .specimen-body{ padding:28px; }
+  .specimen h3{
+    font-family:var(--font-display); font-size:20px; margin:0 0 4px; font-weight:600;
+  }
+  .specimen .desc{ color:var(--ink-soft); font-size:13.5px; margin:0 0 22px; }
+
+  .status-tag{
+    font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+    padding:2px 7px; border-radius:2px; font-weight:600;
+  }
+  .status-tag.pass{ background:var(--green-soft); color:var(--green); }
+  .status-tag.warn{ background:var(--amber-soft); color:var(--amber); }
+  .status-tag.fail{ background:var(--red-soft); color:var(--red); }
+
+  .row{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+  .col{ display:flex; flex-direction:column; gap:16px; }
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:640px){ .grid-2{ grid-template-columns:1fr; } }
+
+  label.field-label{
+    display:block; font-size:12px; font-weight:600; color:var(--ink-soft);
+    margin-bottom:6px; font-family:var(--font-mono); letter-spacing:.02em;
+  }
+
+  /* ---------- buttons ---------- */
+  button{ font-family:var(--font-body); cursor:pointer; }
+  .btn{
+    appearance:none; border:1px solid transparent; border-radius:var(--radius);
+    padding:10px 18px; font-size:14px; font-weight:600; letter-spacing:.01em;
+    display:inline-flex; align-items:center; gap:8px; transition:all .15s ease;
+  }
+  .btn-primary{ background:var(--ink); color:var(--paper); }
+  .btn-primary:hover{ background:var(--blue); }
+  .btn-secondary{ background:transparent; border-color:var(--line-strong); color:var(--ink); }
+  .btn-secondary:hover{ border-color:var(--ink); }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); }
+  .btn-ghost:hover{ color:var(--ink); }
+  .btn-danger{ background:var(--red); color:#fff; }
+  .btn-danger:hover{ filter:brightness(1.08); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+  .spinner{
+    width:13px; height:13px; border-radius:50%;
+    border:2px solid color-mix(in srgb, currentColor 30%, transparent);
+    border-top-color:currentColor; animation:spin .7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ---------- form controls ---------- */
+  input[type=text], input[type=email], select, textarea{
+    font-family:var(--font-body); font-size:14px; color:var(--ink);
+    background:var(--paper); border:1px solid var(--line-strong); border-radius:var(--radius);
+    padding:10px 12px; width:100%; transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  textarea{ resize:vertical; min-height:70px; font-family:var(--font-body); }
+  input:focus, select:focus, textarea:focus{
+    outline:none; border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft);
+  }
+  input.error, .field-error input{ border-color:var(--red); box-shadow:0 0 0 3px var(--red-soft); }
+  .error-msg{ font-size:12px; color:var(--red); margin-top:5px; font-family:var(--font-mono); }
+  input:disabled, select:disabled{ opacity:.45; cursor:not-allowed; }
+
+  .checkbox-row, .radio-row{ display:flex; align-items:center; gap:8px; font-size:14px; }
+  input[type=checkbox], input[type=radio]{ width:16px; height:16px; accent-color:var(--blue); }
+
+  .toggle{ --w:38px; --h:20px; width:var(--w); height:var(--h); background:var(--line); border-radius:999px; position:relative; cursor:pointer; border:none; padding:0; }
+  .toggle::after{ content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform .18s ease; box-shadow:0 1px 2px rgba(0,0,0,.2); }
+  .toggle.on{ background:var(--green); }
+  .toggle.on::after{ transform:translateX(18px); }
+
+  input[type=range]{ accent-color:var(--blue); width:100%; }
+
+  /* ---------- badges ---------- */
+  .badge{
+    font-family:var(--font-mono); font-size:11px; font-weight:600; padding:3px 9px;
+    border-radius:999px; display:inline-flex; align-items:center; gap:5px; letter-spacing:.02em;
+  }
+  .badge.blue{ background:var(--blue-soft); color:var(--blue); }
+  .badge.green{ background:var(--green-soft); color:var(--green); }
+  .badge.amber{ background:var(--amber-soft); color:var(--amber); }
+  .badge.red{ background:var(--red-soft); color:var(--red); }
+  .badge.neutral{ background:var(--paper); border:1px solid var(--line-strong); color:var(--ink-soft); }
+
+  /* ---------- alerts ---------- */
+  .alert{
+    display:flex; gap:12px; padding:14px 16px; border-radius:var(--radius);
+    border-left:3px solid; font-size:13.5px; line-height:1.5;
+  }
+  .alert b{ display:block; font-family:var(--font-display); font-size:14px; margin-bottom:2px; }
+  .alert.info{ background:var(--blue-soft); border-color:var(--blue); }
+  .alert.success{ background:var(--green-soft); border-color:var(--green); }
+  .alert.warning{ background:var(--amber-soft); border-color:var(--amber); }
+  .alert.error{ background:var(--red-soft); border-color:var(--red); }
+
+  /* ---------- progress ---------- */
+  .progress-track{ height:8px; background:var(--paper); border:1px solid var(--line-strong); border-radius:999px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--blue); border-radius:999px; transition:width .3s ease; }
+
+  /* ---------- cards ---------- */
+  .card{
+    background:var(--paper); border:1px solid var(--line-strong); border-radius:var(--radius);
+    padding:18px; display:flex; flex-direction:column; gap:10px;
+  }
+  .card-thumb{
+    height:100px; border-radius:2px;
+    background:repeating-linear-gradient(135deg, var(--line) 0 8px, transparent 8px 16px);
+    border:1px solid var(--line-strong);
+  }
+  .card h4{ margin:0; font-family:var(--font-display); font-size:15px; }
+  .card p{ margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5; }
+  .stat-value{ font-family:var(--font-display); font-size:30px; font-weight:700; }
+  .stat-label{ font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; }
+
+  /* ---------- skeleton ---------- */
+  .skeleton{ background:linear-gradient(90deg, var(--line) 25%, var(--paper-raised) 37%, var(--line) 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; border-radius:3px; }
+  @keyframes shimmer{ 0%{ background-position:100% 50%; } 100%{ background-position:0 50%; } }
+
+  /* ---------- modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.45); display:none;
+    align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal{
+    background:var(--paper-raised); border:1px solid var(--line-strong); max-width:400px; width:100%;
+    padding:24px; border-radius:var(--radius); position:relative;
+  }
+  .modal h3{ margin:0 0 8px; font-family:var(--font-display); }
+  .modal p{ color:var(--ink-soft); font-size:13.5px; line-height:1.5; margin:0 0 20px; }
+  .modal-close{ position:absolute; top:14px; right:16px; background:none; border:none; color:var(--ink-soft); font-size:18px; }
+
+  /* ---------- toast ---------- */
+  .toast-zone{ position:fixed; bottom:24px; right:24px; display:flex; flex-direction:column; gap:8px; z-index:120; }
+  .toast{
+    font-size:13px; padding:12px 16px; border-radius:var(--radius); background:var(--ink); color:var(--paper);
+    display:flex; align-items:center; gap:10px; box-shadow:0 6px 20px rgba(0,0,0,.2);
+    animation:toast-in .25s ease;
+  }
+  @keyframes toast-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+
+  /* ---------- typography swatch ---------- */
+  .type-row{ display:flex; align-items:baseline; gap:18px; padding:10px 0; border-bottom:1px solid var(--line); }
+  .type-row:last-child{ border-bottom:none; }
+  .type-row .tag{ font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); width:70px; flex-shrink:0; }
+  .type-sample-display{ font-family:var(--font-display); font-weight:700; }
+  .type-sample-body{ font-family:var(--font-body); }
+  .type-sample-mono{ font-family:var(--font-mono); }
+
+  /* ---------- swatches ---------- */
+  .swatch-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px; }
+  .swatch{ border:1px solid var(--line-strong); border-radius:2px; overflow:hidden; }
+  .swatch-color{ height:56px; }
+  .swatch-label{ font-family:var(--font-mono); font-size:10.5px; padding:8px; background:var(--paper); }
+  .swatch-label .name{ display:block; font-weight:600; color:var(--ink); }
+  .swatch-label .hex{ color:var(--ink-soft); }
+
+  footer{ text-align:center; padding:40px 0; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="brand-mark">QA</span>
+    <h1>UI Test Bench</h1>
+  </div>
+  <div class="header-controls">
+    <div class="readout"><span class="dot"></span><span id="clock">00:00:00</span></div>
+    <button class="switch" id="themeSwitch" aria-label="Toggle dark mode"></button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="intro">
+    <p class="eyebrow">Specimen Sheet — Rev. 01</p>
+    <h2>A calibration sheet for interface components.</h2>
+    <p>Every control below is wired up and interactive — toggle states, trigger errors, fire a toast — so you can eyeball hover, focus, disabled, and loading states before they ship. Flip the switch top-right to check both themes.</p>
+  </div>
+
+  <!-- BUTTONS -->
+  <section class="specimen">
+    <div class="cross-tr"></div><div class="cross-br"></div>
+    <div class="specimen-head"><span class="id">SPEC-01 / BUTTONS</span><span class="status-tag pass">Pass</span></div>
+    <div class="specimen-body">
+      <h3>Buttons</h3>
+      <p class="desc">Primary, secondary, ghost, and destructive actions — plus disabled and loading states.</p>
+      <div class="row">
+        <button class="btn btn-primary">Save changes</button>
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-ghost">Learn more</button>
+        <button class="btn btn-danger">Delete project</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+        <button class="btn btn-primary" id="loadBtn"><span id="loadBtnContent">Run test</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM CONTROLS -->
+  <section class="specimen">
+    <div class="cross-tr"></div><div class="cross-br"></div>
+    <div class="specimen-head"><span class="id">SPEC-02 / FORM CONTROLS</span><span class="status-tag pass">Pass</span></div>
+    <div class="specimen-body">
+      <h3>Form controls</h3>
+      <p class="desc">Text inputs, selects, checkboxes, radios, switches, and a range slider.</p>
+      <div class="grid-2">
+        <div>
+          <label class="field-label">Email address</label>
+          <input type="email" placeholder="you@example.com">
+        </div>
+        <div class="field-error">
+          <label class="field-label">Password</label>
+          <input type="text" class="error" value="tooshort">
+          <div class="error-msg">Must be at least 8 characters.</div>
+        </div>
+        <div>
+          <label class="field-label">Role</label>
+          <select><option>Viewer</option><option>Editor</option><option>Admin</option></select>
+        </div>
+        <div>
+          <label class="field-label">Disabled field</label>
+          <input type="text" value="Locked value" disabled>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <label class="field-label">Notes</label>
+        <textarea placeholder="Add a test note…"></textarea>
+      </div>
+      <div class="row" style="margin-top:20px;">
+        <label class="checkbox-row"><input type="checkbox" checked> Remember me</label>
+        <label class="radio-row"><input type="radio" name="r" checked> Option A</label>
+        <label class="radio-row"><input type="radio" name="r"> Option B</label>
+        <button class="toggle on" id="toggle1" onclick="this.classList.toggle('on')"></button>
+      </div>
+      <div style="margin-top:18px; max-width:280px;">
+        <label class="field-label">Range</label>
+        <input type="range" min="0" max="100" value="60">
+      </div>
+    </div>
+  </section>
+
+  <!-- FEEDBACK -->
+  <section class="specimen">
+    <div class="cross-tr"></div><div class="cross-br"></div>
+    <div class="specimen-head"><span class="id">SPEC-03 / FEEDBACK</span><span class="status-tag warn">Review</span></div>
+    <div class="specimen-body">
+      <h3>Alerts, badges & progress</h3>
+      <p class="desc">Status colors used consistently across banners, tags, and progress bars.</p>
+      <div class="col">
+        <div class="alert info"><div><b>Heads up</b>This build hasn't been deployed to staging yet.</div></div>
+        <div class="alert success"><div><b>Test passed</b>All 42 assertions completed without errors.</div></div>
+        <div class="alert warning"><div><b>Slow response</b>API latency is above the 300ms threshold.</div></div>
+        <div class="alert error"><div><b>Test failed</b>Expected 200, received 500 on /api/checkout.</div></div>
+      </div>
+      <div class="row" style="margin-top:18px;">
+        <span class="badge blue">In progress</span>
+        <span class="badge green">Passing</span>
+        <span class="badge amber">Flaky</span>
+        <span class="badge red">Failing</span>
+        <span class="badge neutral">Skipped</span>
+      </div>
+      <div style="margin-top:18px; max-width:320px;">
+        <label class="field-label">Coverage — 74%</label>
+        <div class="progress-track"><div class="progress-fill" style="width:74%"></div></div>
+      </div>
+      <div class="row" style="margin-top:18px;">
+        <button class="btn btn-secondary" onclick="fireToast()">Fire a toast</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('modalOverlay').classList.add('open')">Open modal</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARDS -->
+  <section class="specimen">
+    <div class="cross-tr"></div><div class="cross-br"></div>
+    <div class="specimen-head"><span class="id">SPEC-04 / CARDS</span><span class="status-tag pass">Pass</span></div>
+    <div class="specimen-body">
+      <h3>Cards</h3>
+      <p class="desc">Content cards and a stat card for dashboard-style layouts.</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-thumb"></div>
+          <h4>Regression suite</h4>
+          <p>Runs on every push to main. Last run 3 minutes ago.</p>
+          <span class="badge green" style="align-self:flex-start;">Passing</span>
+        </div>
+        <div class="card">
+          <span class="stat-label">Open Issues</span>
+          <span class="stat-value">128</span>
+          <p>↓ 12% since last sprint</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <section class="specimen">
+    <div class="cross-tr"></div><div class="cross-br"></div>
+    <div class="specimen-head"><span class="id">SPEC-05 / LOADING STATES</span><span class="status-tag warn">Pending</span></div>
+    <div class="specimen-body">
+      <h3>Skeleton loaders</h3>
+      <p class="desc">Placeholder shimmer for content still in flight.</p>
+      <div class="col" style="max-width:420px;">
+        <div class="skeleton" style="height:16px; width:60%;"></div>
+        <div class="skeleton" style="height:16px; width:90%;"></div>
+        <div class="skeleton" style="height:16px; width:75%;"></div>
+        <div class="skeleton" style="height:80px; width:100%;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TYPOGRAPHY -->
+  <section class="specimen">
+    <div class="cross-tr"></div><div class="cross-br"></div>
+    <div class="specimen-head"><span class="id">SPEC-06 / TYPOGRAPHY</span><span class="status-tag pass">Pass</span></div>
+    <div class="specimen-body">
+      <h3>Type scale</h3>
+      <p class="desc">Space Grotesk for headings, IBM Plex Sans for body, IBM Plex Mono for data and labels.</p>
+      <div class="type-row"><span class="tag">Display</span><span class="type-sample-display" style="font-size:30px;">Interface Testing 001</span></div>
+      <div class="type-row"><span class="tag">Heading</span><span class="type-sample-display" style="font-size:20px;">Component specimen</span></div>
+      <div class="type-row"><span class="tag">Body</span><span class="type-sample-body" style="font-size:15px;">The quick brown fox jumps over the lazy dog.</span></div>
+      <div class="type-row"><span class="tag">Mono</span><span class="type-sample-mono" style="font-size:13px;">status: 200 OK — 14ms</span></div>
+    </div>
+  </section>
+
+  <!-- COLOR -->
+  <section class="specimen">
+    <div class="cross-tr"></div><div class="cross-br"></div>
+    <div class="specimen-head"><span class="id">SPEC-07 / COLOR TOKENS</span><span class="status-tag pass">Pass</span></div>
+    <div class="specimen-body">
+      <h3>Color tokens</h3>
+      <p class="desc">The signal palette used consistently across states above.</p>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:var(--ink)"></div><div class="swatch-label"><span class="name">Ink</span><span class="hex">#1B1F23</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--blue)"></div><div class="swatch-label"><span class="name">Blue</span><span class="hex">#2F5D8A</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--green)"></div><div class="swatch-label"><span class="name">Green</span><span class="hex">#3F8F5F</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--amber)"></div><div class="swatch-label"><span class="name">Amber</span><span class="hex">#B8842B</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--red)"></div><div class="swatch-label"><span class="name">Red</span><span class="hex">#C0392B</span></div></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>UI TEST BENCH — RENDERED CLIENT-SIDE — NO DATA LEAVES THIS PAGE</footer>
+
+<!-- modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">✕</button>
+    <h3>Confirm test run</h3>
+    <p>This will execute the full suite against staging. It usually takes about 90 seconds.</p>
+    <div class="row">
+      <button class="btn btn-primary" onclick="document.getElementById('modalOverlay').classList.remove('open')">Run suite</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('modalOverlay').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-zone" id="toastZone"></div>
+
+<script>
+  // theme toggle
+  const themeSwitch = document.getElementById('themeSwitch');
+  themeSwitch.addEventListener('click', () => document.documentElement.classList.toggle('dark'));
+
+  // clock readout
+  function tick(){
+    document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-GB');
+  }
+  tick(); setInterval(tick, 1000);
+
+  // loading button demo
+  const loadBtn = document.getElementById('loadBtn');
+  const loadBtnContent = document.getElementById('loadBtnContent');
+  loadBtn.addEventListener('click', () => {
+    if(loadBtn.disabled) return;
+    loadBtn.disabled = true;
+    loadBtnContent.innerHTML = '<span class="spinner"></span> Running…';
+    setTimeout(() => {
+      loadBtnContent.textContent = 'Run test';
+      loadBtn.disabled = false;
+      fireToast('Test run complete');
+    }, 1600);
+  });
+
+  // toast
+  function fireToast(msg){
+    const zone = document.getElementById('toastZone');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg || 'Action completed';
+    zone.appendChild(el);
+    setTimeout(() => el.remove(), 2800);
+  }
+
+  // close modal on overlay click
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if(e.target.id === 'modalOverlay') e.target.classList.remove('open');
+  });
+</script>
+
+</body>
+</html>
